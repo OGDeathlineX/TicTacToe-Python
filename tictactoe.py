@@ -6,9 +6,6 @@ import os
 letter = ''
 cpu_letter = ''
 
-#Depth
-depth=0
-
 def playerSelection():
     print("Select your character X or O:")
     letter = input()
@@ -57,7 +54,7 @@ def mainPage():
     print('     ||     ||')
 
 #Difficulty
-def minimax(board,player,depth):
+def minimax(board,player):
     x=analyzeboard(board);
     if(x!=0):
         return (x*player);
@@ -84,21 +81,12 @@ def User1Turn(board):
     board[pos-1]=-1;
 
 def CompTurn(board,difficulty):
-    if difficulty == 1:
-        depth=3
-        depth = int(depth)
-    if difficulty == 2:
-        depth=5
-        depth = int(depth)
-    if difficulty == 3:
-        depth=9
-        depth = int(depth)
     pos=-1;
     value=-2;
     for i in range(0,9):
         if(board[i]==0):
             board[i]=1;
-            score=-minimax(board, -1, depth);
+            score=-minimax(board, -1);
             board[i]=0;
             if(score>value):
                 value=score;
