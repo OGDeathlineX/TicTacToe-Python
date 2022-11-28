@@ -5,6 +5,7 @@ import os
 #Player Selection
 letter = ''
 cpu_letter = ''
+cont = 0
 
 def playerSelection():
     print("Select your character X or O:")
@@ -54,24 +55,6 @@ def mainPage():
     print('     ||     ||')
 
 #Difficulty
-def minimax(board,player):
-    x=analyzeboard(board);
-    if(x!=0):
-        return (x*player);
-    pos=-1;
-    value=-2;
-    for i in range(0,9):
-        if(board[i]==0):
-            board[i]=player;
-            score=-minimax(board,(player*-1));
-            if(score>value):
-                value=score;
-                pos=i;
-            board[i]=0;
-    if(pos==-1):
-        return 0;
-    return value;
-
 def User1Turn(board):
     pos=input("Enter " + letter + "'s position from [1...9]: ");
     pos=int(pos);
@@ -93,9 +76,31 @@ def CompTurn(board,difficulty):
                 pos=i;
     board[pos]=1;
 
+def minimax(board,player):
+    x=analyzeboard(board);
+    if(x!=0):
+        return (x*player);
+    pos=-1;
+    value=-2;
+    cont=0
+    for i in range(0,9):
+        print(cont)
+        if(board[i]==0):
+            board[i]=player;
+            score=-minimax(board,(player*-1));
+            cont=cont+1
+            if(score>value):
+                value=score;
+                pos=i;
+            board[i]=0;
+        if cont==2:
+            break
+    if(pos==-1):
+        return 0;
+    return value;
+
 def analyzeboard(board):
     cb=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-
     for i in range(0,8):
         if(board[cb[i][0]] != 0 and
            board[cb[i][0]] == board[cb[i][1]] and
@@ -128,14 +133,15 @@ def setDifficulty(letter, cpu_letter):
                 ConstBoardX(board, letter, cpu_letter);
                 User1Turn(board);
     x=analyzeboard(board);
- 
-    if(x==-1):
+    print(x)
+    x=int(x)
+    if(x == -1):
          ConstBoardX(board, letter, cpu_letter);
          print("PLAYER WINS!")
-    if(x==1):
+    if(x == 1):
          ConstBoardX(board, letter, cpu_letter);
          print("IA WINS!")
-    else:
+    elif(x != 1 or x != -1):
          ConstBoardX(board, letter, cpu_letter);
          print("IT'S A DRAW!")
 
