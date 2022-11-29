@@ -7,7 +7,6 @@ letter = ""
 cpu_letter = ""
 cont = 0
 
-
 def playerSelection():
     print("Select your character X or O:")
     letter = input()
@@ -25,8 +24,15 @@ def playerSelection():
     print("Player = " + letter + " | CPU = " + cpu_letter + "\n")
     setDifficulty(letter, cpu_letter)
 
-
 # Board
+# Print the next board
+#
+#   -   -   -
+#
+#   -   -   -
+#
+#   -   -   -
+
 def ConstBoardX(board, letter, cpu_letter):
     print("Current State Of Board : \n\n")
     for i in range(0, 9):
@@ -39,7 +45,6 @@ def ConstBoardX(board, letter, cpu_letter):
         if board[i] == -1:
             print(letter + " ", end=" ")
     print("\n\n")
-
 
 # Main Page
 def mainPage():
@@ -56,18 +61,18 @@ def mainPage():
     print("     ||     ||  O")
     print("     ||     ||")
 
-
 # Difficulty
-def User1Turn(board):
-    pos = input("Enter " + letter + "'s position from [1...9]: ")
+# User's turn
+def UserTurn(board):
+    pos = input("Enter " + letter + "'s position from [1 - 9]: ")
     pos = int(pos)
     if board[pos - 1] != 0:
         print("Select a valid position")
         exit(0)
     board[pos - 1] = -1
 
-
-def CompTurn(board, difficulty):
+# IA's turn
+def IaTurn(board, difficulty):
     pos = -1
     value = -2
     for i in range(0, 9):
@@ -80,11 +85,11 @@ def CompTurn(board, difficulty):
                 pos = i
     board[pos] = 1
 
-
+# Minimax algorithm
 def minimax(board, player, difficulty):
-    x = analyzeboard(board)
-    if x != 0:
-        return x * player
+    game = analyzeboard(board)
+    if game != 0:
+        return game * player
     pos = -1
     value = -2
     cont = 0
@@ -105,8 +110,8 @@ def minimax(board, player, difficulty):
         return 0
     return value
 
-
 def analyzeboard(board):
+    # Cb it's equal to the victory cases, and this function analyze that the board meets with the  victory statements
     cb = [
         [0, 1, 2],
         [3, 4, 5],
@@ -117,6 +122,7 @@ def analyzeboard(board):
         [0, 4, 8],
         [2, 4, 6],
     ]
+    # Validation of the board, it returns the array and if its ocuppated by the player or the IA
     for i in range(0, 8):
         if (
             board[cb[i][0]] != 0
@@ -146,22 +152,23 @@ def setDifficulty(letter, cpu_letter):
         if analyzeboard(board) != 0:
             break
         if (i + player) % 2 == 0:
-            CompTurn(board, difficulty)
+            IaTurn(board, difficulty)
         else:
             ConstBoardX(board, letter, cpu_letter)
-            User1Turn(board)
-    x = analyzeboard(board)
-    x = int(x)
-    if x == -1:
+            UserTurn(board)
+
+    # Once everyone done their respective move, game
+    game = analyzeboard(board)
+    game = int(game)
+    if game == -1:
         ConstBoardX(board, letter, cpu_letter)
         print("PLAYER WINS!")
-    elif x == 1:
+    elif game == 1:
         ConstBoardX(board, letter, cpu_letter)
         print("IA WINS!")
-    elif x != 1 or x != -1:
+    elif game != 1 or game != -1:
         ConstBoardX(board, letter, cpu_letter)
         print("IT'S A DRAW!")
-
 
 # Execution
 mainPage()
