@@ -89,8 +89,10 @@ def IaTurn(board, difficulty):
 def minimax(board, player, difficulty):
     cont=0
     game = analyzeboard(board, difficulty)
-    if game != 0:
-        return game * player
+    if game != 0 and difficulty == 1:
+        return game
+    if game != 0 and (difficulty == 2 or difficulty == 3):
+        return game* player
     pos = -1
     value = -2
     for i in range(0, 9):
@@ -102,6 +104,7 @@ def minimax(board, player, difficulty):
                 value = score
                 pos = i
             board[i] = 0
+        #Tree pruning
         if difficulty == 1 and cont == 2:
             break
         if difficulty == 2 and cont == 4:
@@ -111,6 +114,12 @@ def minimax(board, player, difficulty):
     return value
 
 def analyzeboard(board, difficulty):
+    # Counter probabilities variable
+    countia = 8 # Counter IA winning probabilities
+    countpl = 8 # Counter Player winning probabilities
+    iapos= -1   # IA position initialization in -1 because 0 it's an existing position in the board
+    plpos= -1   # Player position initialization in -1 because 0 it's an existing position in the board
+    scorepreview=0
     # Cb it's equal to the victory cases, and this function analyze that the board meets with the  victory statements
     cb = [
         [0, 1, 2],
@@ -136,23 +145,76 @@ def analyzeboard(board, difficulty):
         return 0
 
     if difficulty == 2:
+        # Define the IA and Player position's on the board
+        for i in range(0, 8):
+            if board[i] == 1:
+                iapos=i
+                break
+            if board[i] == -1:
+                plpos=i
+                break
+
+        #Compares
         for i in range(0, 8):
             if (
-                board[cb[i][0]] != 0
-                and board[cb[i][0]] == board[cb[i][1]]
-                or board[cb[i][0]] == board[cb[i][2]]
+                (board[cb[i][0]] == 1
+                or board[cb[i][1]] == 1
+                or board[cb[i][2]] == 1)
+                and
+                (cb[i][0] != plpos
+                and cb[i][1] != plpos
+                and cb[i][2] != plpos)
             ):
-                return board[cb[i][2]]
-        return 0
+                countia=countia-1
+
+            elif (
+                (board[cb[i][0]] == -1
+                or board[cb[i][1]] == -1
+                or board[cb[i][2]] == -1)
+                and
+                (cb[i][0] != iapos
+                and cb[i][1] != iapos
+                and cb[i][2] != iapos)
+            ):
+                countpl=countpl-1
+        scorepreview=countpl-countia
+        return scorepreview
 
     if difficulty == 1:
+        # Define the IA and Player position's on the board
+        for i in range(0, 8):
+            if board[i] == 1:
+                iapos=i
+                break
+            if board[i] == -1:
+                plpos=i
+                break
+
+        #Compares
         for i in range(0, 8):
             if (
-                board[cb[i][0]] != 0
-                and board[cb[i][0]] == board[cb[i][1]]
+                (board[cb[i][0]] == 1
+                or board[cb[i][1]] == 1
+                or board[cb[i][2]] == 1)
+                and
+                (cb[i][0] != plpos
+                and cb[i][1] != plpos
+                and cb[i][2] != plpos)
             ):
-                return board[cb[i][2]]
-        return 0
+                countia=countia-1
+
+            elif (
+                (board[cb[i][0]] == -1
+                or board[cb[i][1]] == -1
+                or board[cb[i][2]] == -1)
+                and
+                (cb[i][0] != iapos
+                and cb[i][1] != iapos
+                and cb[i][2] != iapos)
+            ):
+                countpl=countpl-1
+        scorepreview=countia-countpl
+        return scorepreview
 
 def setDifficulty(letter, cpu_letter):
     print(
@@ -166,8 +228,7 @@ def setDifficulty(letter, cpu_letter):
     # In terms to make easier the logic and heuristic, we decided to program the tic tac toe's board in 1 array.
     # In the minimax algorithm player moves 1 and cpu move -1.
     board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    player = input("Before start: Enter to play 1(st) or 2(nd) :")
-    player = int(player)
+    player = 1
 
     for i in range(0, 9):
         if analyzeboard(board, difficulty=3) != 0:
@@ -179,10 +240,7 @@ def setDifficulty(letter, cpu_letter):
             ConstBoardX(board, letter, cpu_letter)
             UserTurn(board)
                     
-
     # Once everyone done their respective move, game
-    print ("dificultad: ")
-    print(difficulty)
     game = analyzeboard(board, difficulty=3)
     game = int(game)
     if game == -1:
