@@ -87,6 +87,7 @@ def IaTurn(board, difficulty):
 
 # Minimax algorithm
 def minimax(board, player, difficulty):
+    cont=0
     game = analyzeboard(board, difficulty)
     if game != 0:
         return game * player
@@ -96,10 +97,15 @@ def minimax(board, player, difficulty):
         if board[i] == 0:
             board[i] = player
             score = -minimax(board, (player * -1), difficulty)
+            cont = cont + 1
             if score > value:
                 value = score
                 pos = i
             board[i] = 0
+        if difficulty == 1 and cont == 2:
+            break
+        if difficulty == 2 and cont == 4:
+            break
     if pos == -1:
         return 0
     return value
@@ -134,11 +140,7 @@ def analyzeboard(board, difficulty):
             if (
                 board[cb[i][0]] != 0
                 and board[cb[i][0]] == board[cb[i][1]]
-            ):
-                return board[cb[i][1]]
-            elif (
-                board[cb[i][1]] != 0
-                and board[cb[i][1]] == board[cb[i][2]]
+                or board[cb[i][0]] == board[cb[i][2]]
             ):
                 return board[cb[i][2]]
         return 0
@@ -148,7 +150,6 @@ def analyzeboard(board, difficulty):
             if (
                 board[cb[i][0]] != 0
                 and board[cb[i][0]] == board[cb[i][1]]
-                or board[cb[i][1]] == board[cb[i][2]]
             ):
                 return board[cb[i][2]]
         return 0
